@@ -1,0 +1,176 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8' />
+<link href='fullcalendar.min.css' rel='stylesheet' />
+<link href='fullcalendar.print.min.css' rel='stylesheet' media='print' />
+<script src='/lib/moment.min.js'></script>
+<script src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js'></script>
+
+<!-- 	<script src='../lib/jquery.min.js'></script> 	改 google 上一行 -->
+
+<script src='fullcalendar.min.js'></script>
+
+<script src='/locale/zh-tw.js'></script> 		 	<!--加-->
+<script src='gcal.js'></script>					<!--加-->
+
+<script type='text/javascript'> 			/* 正修藝文處空間借用 */
+
+
+$(document).ready(function() { 
+	    $('#calendar').fullCalendar({ 
+			firstDay: 1,
+		 header: {
+       			 left: 'prev,next today',
+   				 center: 'title',
+        		 right: 'month,agendaWeek,agendaDay'
+			       },
+				   	  	   
+				   			
+				/*googleCalendarApiKey: 'AIzaSyCiMTrgp4nbm2IhnrESUXtHUQ0L8cnOgvc', 
+            					events: { 
+                					googleCalendarId: '8veb42bv7celcgmr74sce4956k@group.calendar.google.com',									
+            						} */
+			/*set all options : options, */
+			
+   			selectable: true,
+   			selectHelper: true,
+   			 // here is the part :
+   			select: function(start, end) {
+            		modalbox(start.format(),end.format());
+   			 },
+   			 
+		
+	});
+			
+			editable: true
+    		});	
+
+
+ </script> 
+
+
+
+
+
+
+
+<!-- <style>
+
+  body {
+    margin: 40px 10px;
+    padding: 0;
+    font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+    font-size: 14px;
+  }
+
+  #calendar {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+</style> -->
+
+<script type='text/javascript'>
+
+$(function() {
+
+function modalbox(start,end) {
+    ID = "popup";
+    // Title
+    var pop_content = '<h2>New event:</h2><form><div style="float:left;width:70%;text-align:right"><INPUT TYPE="TEXT" ID="title" style="width:200px;height:30px;line-height:30px;margin:5px;background-color:#EEF4F7" NAME="title" ><br>';
+    // Place
+    pop_content += '<div style="font-size:11px;color:gray;margin-top:10px">Place: <INPUT TYPE="TEXT" ID="where_event" style="width:200px;height:20px;line-height:20px;margin:3px;vertical-align:middle"  NAME="where_event"><br>';
+    // Description
+    pop_content += 'Content : <TEXTAREA ID="content_event" style="width:200px;height:60px;margin:3px;font-family:sans-serif;font-size:13px;vertical-align:middle" NAME="content_event"></TEXTAREA></div> </div>';
+    // Submit       
+    pop_content += '<INPUT type="submit" style="height:40px;width:90px" value="OK">';
+    // Start and End of the event
+    pop_content += '<INPUT TYPE="HIDDEN" ID="start" NAME="start" value="'+start+'"><INPUT type="HIDDEN" ID="end" NAME="end" value="'+end+'"></form>';
+
+    /****** Some CSS effect *****************/
+    $('#'+ID).fadeIn().css({'width': 500})
+        .empty()
+        .prepend('<a href="#" class="close"><img src="images/close.png" border="0" class="btn_close" title="Fermer" alt="Fermer" /></a>')
+        .append(pop_content);   
+    // Some CSS Adjust for centering the box
+    var popMargTop = ($('#' + ID).height() + 80) / 2;
+    var popMargLeft = ($('#' + ID).width() + 80) / 2;
+    $('#' + ID).css({
+        'margin-top' : -popMargTop,
+        'margin-left' : -popMargLeft
+    });
+    //Effet fade-in du fond opaque
+    $('body').append('<div id="fade"></div>'); //Ajout du fond opaque noir
+    //Apparition du fond - .css({'filter' : 'alpha(opacity=80)'}) pour corriger les bogues de IE
+    $('#fade').css({'filter' : 'alpha(opacity=80)'}).fadeIn();
+    //Fade in the Popup and add close button
+    }
+    /********** end of CSS effects *************/
+
+    });
+    </script>
+
+<div id="popup" class="popup_block"></div>
+
+
+<script type='text/javascript'>
+
+$(function() {
+/*********** We get the form data ****************/ 
+$('#popup').submit(function(event) {
+    event.preventDefault(); // on stop le submit
+    var title = $('#title').val();
+    var start = $('#start').val();
+    var end = $('#end').val();
+    var where_event = $('#where_event').val();
+    var content_event = $('#content_event').val();
+
+    // because we want immediate reaction of FullCalendar, we render the created event on the FullCalendar, even if it's only temporarily
+    if (title) {
+        $('#calendar').fullCalendar('renderEvent',
+            {
+            title: title,
+            start: start,
+            end: end
+            },
+            true // make the event "stick"
+        );
+    // Now we push it to Google also :
+    add_event_gcal(title,start,end,where_event,content_event);  
+    }
+
+    // Wether we had the form fulfilled or not, we clean FullCalendar and close the popup   
+    $('#calendar').fullCalendar('unselect');
+    $('#fade , .popup_block').fadeOut(function() {
+        $('#fade, a.close').hide("normal");    
+    });
+});
+
+
+/****** NOW WE ASK THE EVENT TO BE PUSHED TO GOOGLE **************/
+function add_event_gcal(title,start,end,where_event,content_event) { 
+    // I will create the eventInsert script in a new page, and I name it here :
+    var url = "calendrier_add.php";
+    var data = {'titre_event' :title, 'start' : start, 'end' :end, 'where_event' : where_event, 'content_event' : content_event};
+
+    // I want to check in the page the result of what happened
+    $('#gcal_loader').load(url,data,function(responseTxt,statusTxt,xhr){
+            if(statusTxt=="error") alert("Error: "+xhr.status+": "+xhr.statusText);
+    });
+}   
+
+});   
+
+</script>
+
+
+
+</head>
+
+<body>
+
+<div id='calendar'></div>
+ 
+</body>
+</html>

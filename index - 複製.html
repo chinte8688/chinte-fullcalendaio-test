@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8' />
+<link href='fullcalendar.min.css' rel='stylesheet' />
+<link href='fullcalendar.print.min.css' rel='stylesheet' media='print' />
+<script src='/lib/moment.min.js'></script>
+<script src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js'></script>
+
+<!-- 	<script src='../lib/jquery.min.js'></script> 	改 google 上一行 -->
+
+<script src='fullcalendar.min.js'></script>
+
+<script src='/locale/zh-tw.js'></script> 		 	<!--加-->
+<script src='gcal.js'></script>					<!--加-->
+
+<script type='text/javascript'> 			/* 正修藝文處空間借用 */
+ 
+$(document).ready(function() {
+    $('#calendar').fullCalendar({
+		firstDay: 1,
+		 header: {
+       			 left: 'prev,next today',
+   				 center: 'title',
+        		 right: 'month,agendaWeek,agendaDay'
+			       },
+				   
+				googleCalendarApiKey: 'AIzaSyCiMTrgp4nbm2IhnrESUXtHUQ0L8cnOgvc', 
+            					events: { 
+                					googleCalendarId: '8veb42bv7celcgmr74sce4956k@group.calendar.google.com',									
+            						}				   
+	  	  		  	 
+        		});
+				
+    		});	
+			
+  </script>   
+	   
+
+<style>
+
+  body {
+    margin: 40px 10px;
+    padding: 0;
+    font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+    font-size: 14px;
+  }
+
+  #calendar {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+</style>
+</head>
+<body>
+
+  <div id='calendar'></div>
+
+</body>
+</html>
